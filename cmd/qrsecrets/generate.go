@@ -5,11 +5,11 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/1william1/ecc"
 	"github.com/chzyer/readline"
+	"github.com/pkg/errors"
 )
 
 func generateKey(options *options, prompt *readline.Instance) error {
@@ -54,11 +54,60 @@ func generateKey(options *options, prompt *readline.Instance) error {
 		})
 	}
 
-	// Write to default file
-	if options.output == "" {
-		// TODO: check if file exists and ask if to overwrite
-		return ioutil.WriteFile("ec.pem", pemData, os.ModeExclusive)
+	filename := fmt.Sprintf("ecdsa-%s.pem", priv.Public.Curve.Params().Name)
+
+	// If output file has been set use that instead
+	if options.output != "" {
+		filename = options.output
 	}
 
-	return ioutil.WriteFile(options.output, pemData, os.ModeExclusive)
+	f, err := os.OpenFile(filename, os.O_WRONLY, os.ModeExclusive)
+	if err != nil {
+		if os.IsNotExist(err) {
+
+			f, err := os.Create(filename)
+			if err != nil {
+				return err
+			}
+
+			if _, err := f.Write(pemData); err != nil {
+				return err
+			}
+
+			f.Close()
+
+			fmt.Printf("[Info] Private key written to %s\n", filename)
+
+			return nil
+		}
+
+		return errors.Wrap(err, "opening file")
+	}
+
+	defer f.Close()
+
+	fmt.Println("File already exits, do you want to overwrite it?")
+	prompt.SetPrompt("Overwrite (y/n): ")
+	overwrite, err := prompt.ReadlineWithDefault("n")
+	if err != nil {
+		return err
+	}
+
+	ow, err := parseBool(overwrite)
+	if err != nil {
+		return err
+	}
+
+	if !ow {
+		fmt.Println("[Info] Aborting, file was not overwritten")
+		return nil
+	}
+
+	if _, err := f.Write(pemData); err != nil {
+		return err
+	}
+
+	fmt.Printf("[Info] Private key written to %s\n", filename)
+	return nil
+
 }
