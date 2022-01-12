@@ -61,3 +61,5 @@ QRsecrets doesn't allow the modification of the KDF on the Ciphertext section, b
 # Package
 
 This repo is both a command line tool and a package you can include into your Go applications.
+
+TODO: provide examples usage
