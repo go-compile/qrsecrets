@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"qrsecrets"
 	"strings"
+
+	"github.com/go-compile/qrsecrets"
 
 	"github.com/chzyer/readline"
 )

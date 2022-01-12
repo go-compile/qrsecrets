@@ -3,8 +3,9 @@ package qrsecrets_test
 import (
 	"bytes"
 	"crypto/elliptic"
-	"qrsecrets"
 	"testing"
+
+	"github.com/go-compile/qrsecrets"
 
 	"github.com/1william1/ecc"
 )

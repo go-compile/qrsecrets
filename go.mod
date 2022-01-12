@@ -1,4 +1,4 @@
-module qrsecrets
+module github.com/go-compile/qrsecrets
 
 go 1.17
 

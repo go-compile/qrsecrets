@@ -2,8 +2,9 @@ package main
 
 import (
 	"crypto/elliptic"
-	"qrsecrets"
 	"strings"
+
+	"github.com/go-compile/qrsecrets"
 
 	"github.com/pkg/errors"
 )
