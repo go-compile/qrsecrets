@@ -164,3 +164,9 @@ func (c *SectionCipherText) Encode(w io.Writer, m *SectionMetaData, masterKey []
 
 	return nil
 }
+
+// Marshal encodes the container and returns it in bytes
+func (c *Container) Marshal(pub *ecc.Public, masterKey []byte) ([]byte, error) {
+	buf := bytes.NewBuffer(nil)
+	return buf.Bytes(), c.Encode(buf, pub, masterKey)
+}
