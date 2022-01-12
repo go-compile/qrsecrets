@@ -19,7 +19,7 @@ var (
 	// ErrProtocolVersionSupport is returned if the version of the protocol
 	// in the container is not a supported version and can not be decoded
 	ErrProtocolVersionSupport = errors.New("protocol version is not supported")
-
+	// ErrCipherTextShort is returned when ciphertext is too short to be valid
 	ErrCipherTextShort = errors.New("ciphertext is too short to be valid")
 )
 
