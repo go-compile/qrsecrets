@@ -215,3 +215,9 @@ func decodeCiphertextSection(r io.Reader, m *SectionMetaData, masterKey []byte) 
 
 	return c, nil
 }
+
+// UnmarshalContainer will decode the provided bytes into a container
+func UnmarshalContainer(container []byte, priv *ecc.Private, masterKey []byte) (*Container, error) {
+	buf := bytes.NewBuffer(container)
+	return DecodeContainer(buf, priv, masterKey)
+}
