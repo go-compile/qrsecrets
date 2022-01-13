@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-compile/qrsecrets"
+	"github.com/skip2/go-qrcode"
 
 	"github.com/pkg/errors"
 )
@@ -33,7 +34,8 @@ type options struct {
 	argonParallelism uint8
 	argonKeyLen      uint32
 
-	padding uint32
+	padding    uint32
+	qrRecovery qrcode.RecoveryLevel
 }
 
 func defaultOptions() *options {
@@ -45,6 +47,8 @@ func defaultOptions() *options {
 		argonIterations:  3,
 		argonParallelism: 4,
 		argonKeyLen:      32,
+
+		qrRecovery: qrcode.Medium,
 	}
 }
 

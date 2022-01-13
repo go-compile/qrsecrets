@@ -72,7 +72,7 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 	// If no file is specified print to terminal
 	if options.output == "" {
 		// TODO: make qrcode recovery level a option
-		qr, err := qrcode.New(string(data), qrcode.Medium)
+		qr, err := qrcode.New(string(data), options.qrRecovery)
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 	imageSize := len(data)
 	switch strings.ToLower(filepath.Ext(options.output)) {
 	case ".png":
-		qr, err := qrcode.New(string(data), qrcode.Medium)
+		qr, err := qrcode.New(string(data), options.qrRecovery)
 		if err != nil {
 			return err
 		}
@@ -135,7 +135,7 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 		fmt.Printf("[Info] Success, png has been saved to %q.\n", options.output)
 		return nil
 	case ".jpg", "jpeg":
-		qr, err := qrcode.New(string(data), qrcode.Medium)
+		qr, err := qrcode.New(string(data), options.qrRecovery)
 		if err != nil {
 			return err
 		}

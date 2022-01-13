@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/go-compile/qrsecrets"
+	"github.com/skip2/go-qrcode"
 
 	"github.com/chzyer/readline"
 )
@@ -184,6 +185,32 @@ func parseArgs(args []string) (*options, []string) {
 			}
 
 			options.padding = uint32(n)
+		case "recovery":
+
+			level := "Unknown"
+			switch options.qrRecovery {
+			case qrcode.Low:
+				level = "Low"
+			case qrcode.Medium:
+				level = "Medium"
+			case qrcode.High:
+				level = "High"
+			case qrcode.Highest:
+				level = "Highest"
+			}
+
+			fmt.Printf("Recovery Level: %s\n", level)
+		case "recovery=":
+			switch strings.ToLower(arg[1]) {
+			case "low":
+				options.qrRecovery = qrcode.Low
+			case "medium":
+				options.qrRecovery = qrcode.Medium
+			case "high":
+				options.qrRecovery = qrcode.High
+			case "highest":
+				options.qrRecovery = qrcode.Highest
+			}
 		default:
 			fmt.Printf("Unknown argument -%q.\n", arg[0])
 			return nil, nil
