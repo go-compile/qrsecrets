@@ -1,3 +1,4 @@
 *.pem
 *.ppk
 *.psk
+bin/
