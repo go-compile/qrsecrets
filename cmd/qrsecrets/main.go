@@ -46,8 +46,16 @@ func app() error {
 		}
 
 		return encrypt(options, prompt, parameters[1])
+	case "decrypt":
+		if len(parameters) < 3 {
+			fmt.Println("[Warning] You must provide your private key and input media.")
+			fmt.Println(" qrsecrets decrypt ./ec-P521.pem ./btc-seed.png")
+			fmt.Println(" qrsecrets decrypt ./ec-P521.pem ./btc-seed.bin")
+			return nil
+		}
+
+		return decrypt(options, prompt, parameters[1], parameters[2])
 	default:
-		// TODO: add decrypt
 		fmt.Printf("[Warning] Unknown a instruction %q.\n", parameters[0])
 		return nil
 	}
@@ -145,6 +153,9 @@ func parseArgs(args []string) (*options, []string) {
 			}
 
 			options = preset
+		case "ignore-size-limit":
+			options.ignoreSizeLimit = !options.ignoreSizeLimit
+			fmt.Printf("[Info] Toggled ignore size limit to %v.\n", options.ignoreSizeLimit)
 		case "curve=":
 			curveID := qrsecrets.CurveToID(arg[1])
 			if curveID == 0 {
@@ -215,7 +226,6 @@ func parseArgs(args []string) (*options, []string) {
 			fmt.Printf("Unknown argument -%q.\n", arg[0])
 			return nil, nil
 			// TODO: add argon2; iterations, memory, parallelism, key length
-			// TODO: add padding length
 		}
 	}
 

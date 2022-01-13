@@ -34,8 +34,10 @@ type options struct {
 	argonParallelism uint8
 	argonKeyLen      uint32
 
-	padding    uint32
-	qrRecovery qrcode.RecoveryLevel
+	paste           bool
+	padding         uint32
+	qrRecovery      qrcode.RecoveryLevel
+	ignoreSizeLimit bool
 }
 
 func defaultOptions() *options {

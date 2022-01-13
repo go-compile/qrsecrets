@@ -54,6 +54,11 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 		content = []byte(plaintext)
 	}
 
+	if !options.ignoreSizeLimit && len(content) >= 2953 {
+		fmt.Println("QR code can only fit 2953 bytes, run with arg -ignore-size-limit to ignore limit at your own caution")
+		return nil
+	}
+
 	// Create new container for secret
 	container, err := qrsecrets.NewContainer(key.Public.Curve, options.hash, content, int32(options.padding))
 	if err != nil {
