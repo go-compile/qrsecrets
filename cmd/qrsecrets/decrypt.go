@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"image"
@@ -61,6 +62,15 @@ func decrypt(options *options, prompt *readline.Instance, privateKeyFile string,
 		}
 
 		fmt.Printf("[Info] Opened file and read %d bytes\n", len(content))
+	}
+
+	if options.base64 {
+		content, err = base64.RawStdEncoding.DecodeString(string(content))
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("[Info] Base64 decode %d bytes\n", len(content))
 	}
 
 	// If master key has been set via the CLI don't ask for it again

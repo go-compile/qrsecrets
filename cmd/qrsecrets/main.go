@@ -156,6 +156,9 @@ func parseArgs(args []string) (*options, []string) {
 		case "ignore-size-limit":
 			options.ignoreSizeLimit = !options.ignoreSizeLimit
 			fmt.Printf("[Info] Toggled ignore size limit to %v.\n", options.ignoreSizeLimit)
+		case "base64":
+			options.base64 = !options.base64
+			fmt.Printf("[Info] Toggled base64 to %v.\n", options.base64)
 		case "curve=":
 			curveID := qrsecrets.CurveToID(arg[1])
 			if curveID == 0 {

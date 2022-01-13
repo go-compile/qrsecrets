@@ -38,6 +38,8 @@ type options struct {
 	padding         uint32
 	qrRecovery      qrcode.RecoveryLevel
 	ignoreSizeLimit bool
+
+	base64 bool
 }
 
 func defaultOptions() *options {

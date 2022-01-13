@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/ecdsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"image/jpeg"
@@ -56,6 +57,9 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 
 	if !options.ignoreSizeLimit && len(content) >= 2953 {
 		fmt.Println("QR code can only fit 2953 bytes, run with arg -ignore-size-limit to ignore limit at your own caution")
+		return nil
+	} else if options.base64 && base64.RawStdEncoding.EncodedLen(len(content)) >= 2953 {
+		fmt.Printf("QR code can only fit %d bytes when using base64, run with arg -ignore-size-limit to ignore limit at your own caution\n", 2953/4)
 		return nil
 	}
 
@@ -135,6 +139,10 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 	}
 
 	defer w.Close()
+
+	if options.base64 {
+		data = []byte(base64.RawStdEncoding.EncodeToString(data))
+	}
 
 	imageSize := len(data)
 	switch strings.ToLower(filepath.Ext(options.output)) {
