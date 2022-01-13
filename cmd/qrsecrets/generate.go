@@ -74,6 +74,7 @@ func generateKey(options *options, prompt *readline.Instance) error {
 				return err
 			}
 
+			f.Truncate(0)
 			f.Close()
 
 			fmt.Printf("[Info] Private key written to %s\n", filename)
