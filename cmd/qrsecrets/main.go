@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/go-compile/qrsecrets"
@@ -166,6 +167,17 @@ func parseArgs(args []string) (*options, []string) {
 			options.file = arg[1]
 		case "masterkey=", "master_key", "passphrase=":
 			options.masterkey = arg[1]
+		case "padding":
+			fmt.Println("Padding length:")
+			fmt.Printf(" %d", options.padding)
+		case "padding=":
+			n, err := strconv.ParseUint(arg[1], 10, 32)
+			if err != nil {
+				fmt.Println("[Warning] Invalid or overflowing unsigned integer.")
+				return nil, nil
+			}
+
+			options.padding = uint32(n)
 		default:
 			fmt.Printf("Unknown argument -%q.\n", arg[0])
 			return nil, nil

@@ -32,6 +32,8 @@ type options struct {
 	argonMemory      uint32
 	argonParallelism uint8
 	argonKeyLen      uint32
+
+	padding uint32
 }
 
 func defaultOptions() *options {
