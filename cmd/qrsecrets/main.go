@@ -117,6 +117,26 @@ func parseArgs(args []string) (*options, []string) {
 			options.encryptKey = b
 		case "output=":
 			options.output = arg[1]
+		case "presets":
+			fmt.Println("Security presets:")
+			fmt.Println(" low")
+			fmt.Println(" medium")
+			fmt.Println(" default")
+			fmt.Println(" high")
+			fmt.Println(" very-high")
+		case "preset=":
+			if i != 0 {
+				fmt.Println("[Warning] Preset must always be the first argument.")
+				return nil, nil
+			}
+
+			preset, err := preset(arg[1])
+			if err != nil {
+				fmt.Println("[Warning] Unknown preset, run -presets for a list of all options.")
+				return nil, nil
+			}
+
+			options = preset
 		case "curve=":
 			curveID := qrsecrets.CurveToID(arg[1])
 			if curveID == 0 {

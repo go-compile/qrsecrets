@@ -27,12 +27,22 @@ type options struct {
 	output string
 
 	hash qrsecrets.HashID
+
+	argonIterations  uint32
+	argonMemory      uint32
+	argonParallelism uint8
+	argonKeyLen      uint32
 }
 
 func defaultOptions() *options {
 	return &options{
 		hash:  qrsecrets.HashSHA256,
 		curve: elliptic.P521(),
+
+		argonMemory:      32 * 1024,
+		argonIterations:  3,
+		argonParallelism: 4,
+		argonKeyLen:      32,
 	}
 }
 
