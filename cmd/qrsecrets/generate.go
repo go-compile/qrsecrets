@@ -74,8 +74,9 @@ func generateKey(options *options, prompt *readline.Instance) error {
 				return err
 			}
 
-			f.Truncate(0)
-			f.Close()
+			if err := f.Close(); err != nil {
+				return err
+			}
 
 			fmt.Printf("[Info] Private key written to %s\n", filename)
 
@@ -102,6 +103,10 @@ func generateKey(options *options, prompt *readline.Instance) error {
 	if !ow {
 		fmt.Println("[Info] Aborting, file was not overwritten")
 		return nil
+	}
+
+	if err := f.Truncate(0); err != nil {
+		return err
 	}
 
 	if _, err := f.Write(pemData); err != nil {
