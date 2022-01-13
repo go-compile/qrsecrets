@@ -54,13 +54,17 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 	container.MetaData.ArgonParallelism = options.argonParallelism
 	container.MetaData.ArgonKeyLen = options.argonKeyLen
 
-	fmt.Println("Input your master key:")
-	masterKey, err := prompt.ReadPassword(" Master key> ")
-	if err != nil {
-		return err
+	// If master key has been set via the CLI don't ask for it again
+	masterKey := []byte(options.masterkey)
+	if options.masterkey == "" {
+		fmt.Println("Input your master key:")
+		masterKey, err = prompt.ReadPassword(" Master key> ")
+		if err != nil {
+			return err
+		}
 	}
 
-	data, err := container.Marshal(key.Public, []byte(masterKey))
+	data, err := container.Marshal(key.Public, masterKey)
 	if err != nil {
 		return err
 	}
