@@ -35,15 +35,27 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 		},
 	}
 
-	// TODO: Check if -file= arg is set
-	fmt.Println("Input your data you want to protect:")
-	plaintext, err := prompt.Readline()
-	if err != nil {
-		return err
+	content := []byte{}
+
+	if options.file != "" {
+		content, err = ioutil.ReadFile(options.file)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("[Info] File %q's contents is being used as the plain text.\n", options.file)
+	} else {
+		fmt.Println("Input your data you want to protect:")
+		plaintext, err := prompt.Readline()
+		if err != nil {
+			return err
+		}
+
+		content = []byte(plaintext)
 	}
 
 	// Create new container for secret
-	container, err := qrsecrets.NewContainer(key.Public.Curve, options.hash, []byte(plaintext), int32(options.padding))
+	container, err := qrsecrets.NewContainer(key.Public.Curve, options.hash, content, int32(options.padding))
 	if err != nil {
 		return err
 	}
@@ -71,7 +83,6 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 
 	// If no file is specified print to terminal
 	if options.output == "" {
-		// TODO: make qrcode recovery level a option
 		qr, err := qrcode.New(string(data), options.qrRecovery)
 		if err != nil {
 			return err
