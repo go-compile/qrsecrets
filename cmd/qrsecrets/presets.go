@@ -39,6 +39,7 @@ func presetDefault() *options {
 func presetHigh() *options {
 	o := defaultOptions()
 
+	o.hash = qrsecrets.HashSHA3_256
 	o.argonMemory = 64 * 1024
 	o.argonIterations = 6
 
@@ -48,6 +49,7 @@ func presetHigh() *options {
 func presetVeryHigh() *options {
 	o := defaultOptions()
 
+	o.hash = qrsecrets.HashSHA3_512
 	o.argonMemory = 64 * 1024
 	o.argonIterations = 12
 
