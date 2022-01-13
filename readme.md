@@ -65,3 +65,30 @@ QRsecrets doesn't allow the modification of the KDF on the Ciphertext section, b
 This repo is both a command line tool and a package you can include into your Go applications.
 
 TODO: provide examples usage
+
+# Screenshots
+
+|                                                           |
+| :-------------------------------------------------------: |
+|           ![example](./assets/terminal-qr.PNG)            |
+| Print the QR code to the terminal, never touches the disk |
+
+|                                               |
+| :-------------------------------------------: |
+|      ![example](./assets/example-qr.png)      |
+| Export QR code directly to a file; png or jpg |
+
+# Download
+
+Compatible with all major operating systems and more. Even compatible with a raspberry pi.
+
+- Windows
+- Mac
+- Linux
+- FreeBSD
+- OpenBSD
+- x86
+- Arm
+- Arm64
+
+Download the latest from [releases page](https://github.com/go-compile/qrsecrets/releases). You can run via the command line or we recommend adding it to your path.
