@@ -123,6 +123,8 @@ func parseArgs(args []string) (*options, []string) {
 			fmt.Println(" SHA512")
 			fmt.Println(" SHA3_256")
 			fmt.Println(" SHA3_512")
+		case "version":
+			fmt.Printf("Version: %s\n", version)
 		case "encrypt=":
 			b, err := parseBool(arg[1])
 			if err != nil {
