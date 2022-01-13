@@ -38,8 +38,14 @@ func app() error {
 	switch strings.ToLower(parameters[0]) {
 	case "generate-key", "generate_key", "generatekey", "genkey", "gen-key", "gen_key":
 		return generateKey(options, prompt)
+	case "encrypt":
+		if len(parameters) < 2 {
+			fmt.Println("[Warning] You must provide a private key as a paramater.")
+			return nil
+		}
+
+		return encrypt(options, prompt, parameters[1])
 	default:
-		// TODO: add encrypt
 		// TODO: add decrypt
 		fmt.Printf("[Warning] Unknown a instruction %q.\n", parameters[0])
 		return nil

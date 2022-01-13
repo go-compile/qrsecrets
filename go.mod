@@ -6,6 +6,7 @@ require (
 	github.com/1william1/ecc v1.0.1
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/pkg/errors v0.9.1
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 )
 

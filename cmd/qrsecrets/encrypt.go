@@ -1,0 +1,118 @@
+package main
+
+import (
+	"crypto/ecdsa"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
+	"io/ioutil"
+
+	"github.com/1william1/ecc"
+	"github.com/chzyer/readline"
+	"github.com/go-compile/qrsecrets"
+	"github.com/pkg/errors"
+	"github.com/skip2/go-qrcode"
+)
+
+func encrypt(options *options, prompt *readline.Instance, privateKeyFile string) error {
+
+	priv, err := readPrivateKey(privateKeyFile, prompt)
+	if err != nil {
+		return err
+	}
+
+	// Convert ECDSA private key to ECC private key
+	key := ecc.Private{
+		D: priv.D,
+		Public: &ecc.Public{
+			Curve: priv.Curve,
+			X:     priv.X,
+			Y:     priv.Y,
+		},
+	}
+
+	// TODO: Check if -file= arg is set
+	fmt.Println("Input your data you want to protect:")
+	plaintext, err := prompt.Readline()
+	if err != nil {
+		return err
+	}
+
+	// Create new container for secret
+	container, err := qrsecrets.NewContainer(key.Public.Curve, options.hash, []byte(plaintext), int32(options.padding))
+	if err != nil {
+		return err
+	}
+
+	// Set the options
+	container.MetaData.ArgonIterations = options.argonIterations
+	container.MetaData.ArgonMemory = options.argonMemory
+	container.MetaData.ArgonParallelism = options.argonParallelism
+	container.MetaData.ArgonKeyLen = options.argonKeyLen
+
+	fmt.Println("Input your master key:")
+	masterKey, err := prompt.ReadPassword(" Master key> ")
+	if err != nil {
+		return err
+	}
+
+	data, err := container.Marshal(key.Public, []byte(masterKey))
+	if err != nil {
+		return err
+	}
+
+	// If no file is specified print to terminal
+	if options.output == "" {
+		// TODO: make qrcode recovery level a option
+		qr, err := qrcode.New(string(data), qrcode.Medium)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println(qr.ToSmallString(false))
+		return nil
+	}
+
+	return errors.New("not write to file implemented yet")
+}
+
+func readPrivateKey(file string, prompt *readline.Instance) (*ecdsa.PrivateKey, error) {
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	pemBlock, rest := pem.Decode(content)
+	if len(rest) > 0 {
+		return nil, errors.New("didn't decode all of PEM file")
+	}
+
+	if x509.IsEncryptedPEMBlock(pemBlock) {
+
+		pw, err := prompt.ReadPassword(fmt.Sprintf("Passphrase for (%s): ", file))
+		if err != nil {
+			return nil, err
+		}
+
+		pemData, err := x509.DecryptPEMBlock(pemBlock, pw)
+		if err != nil {
+			return nil, err
+		}
+
+		pemBlock.Bytes = pemData
+	}
+
+	switch pemBlock.Type {
+	case "EC PRIVATE KEY":
+		key, err := x509.ParseECPrivateKey(pemBlock.Bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		return key, nil
+	case "RSA PRIVATE KEY":
+		return nil, errors.New("RSA is not supported")
+	default:
+		return nil, errors.New(fmt.Sprintf("unsupported private key type %q", pemBlock.Type))
+	}
+}
