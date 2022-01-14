@@ -92,3 +92,73 @@ Compatible with all major operating systems and more. Even compatible with a ras
 - Arm64
 
 Download the latest from [releases page](https://github.com/go-compile/qrsecrets/releases). You can run via the command line or we recommend adding it to your path.
+
+# Usage
+
+## Encrypt data
+
+```bash
+# Basic encrypt with default settings
+qrsecrets encrypt ecdsa-P521.pem
+
+# Specify security settings
+qrsecrets -preset=high encrypt ecdsa-P521.pem
+
+# Render QR code as PNG
+qrsecrets encrypt ecdsa-P521.pem -output=img.png
+qrsecrets encrypt ecdsa-P521.pem -output=img.jpg
+
+# Save in binary format instead of using a QR code (required for bigger content)
+qrsecrets encrypt ecdsa-P521.pem -output=data.bin
+
+# Encrypt file contents
+qrsecrets encrypt ecdsa-P521.pem -file=seed.txt
+
+# Base64 encode output (useful for using external QR scanning/decoding apps)
+qrsecrets encrypt ecdsa-P521.pem -base64
+
+# Mixture of different example arguments
+qrsecrets -preset=high -hash=sha3_512 encrypt ecdsa-P521.pem -file=seed.txt -output=qr.png
+
+# The masterkey can even be passed in via the CLI, although this is insecure as it will be stored in your bash history
+qrsecrets encrypt ecdsa-P521.pem -masterkey="password123"
+```
+
+## Decrypt
+
+```bash
+# Decode QR code and decrypt
+qrsecrets decrypt ecdsa-P521.pem image.png
+
+# Decode and decrypt file
+qrsecrets decrypt ecdsa-P521.pem secret.bin
+
+# Decode and decrypt base64 encoded container
+qrsecrets decrypt ecdsa-P521.pem image.png -base64
+
+# The masterkey can be passed in via the CLI, although this is insecure as it will be stored in your bash history
+qrsecrets decrypt ecdsa-P521.pem image.png - masterkey="password123"
+```
+
+## Generate private key
+
+```bash
+qrsecrets generatekey
+
+# You can specify the curve by using presets or specify the curve via the -curve= arg.
+qrsecrets -curve=p256 generatekey
+qrsecrets -preset=high generatekey
+
+# You can encrypt your private key with a passphrase by using the -encrypt=true argument.
+
+qrsecrets -preset=high generatekey -encrypt=true
+
+# You can also specify a file to save the key to
+qrsecrets generatekey -output=private.pem
+```
+
+## Help
+
+```bash
+qrsecrets -help
+```
