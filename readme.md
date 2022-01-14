@@ -1,5 +1,6 @@
 # QR Secrets
 
+_The Argon2 & Elliptic Curve AES encryption scheme_
 <img align="right" width="200" src="./assets/logo.png">
 
 QR secrets is a cryptographically secure mechanism to store secret data with the highest levels of security. Incorporating; AES256-GCM-HKDF-ARGON2 and ECIES-AES256-GCM-HKDF-SHA256. Rated for a 256 bit security level and requiring two keys, one private Elliptic Curve key and one passphrase known as the Master Key. You only require the master key to encrypt and the public key of Elliptic key. This allows you to, if needed, encrypt on one machine and only decrypt your hardened secure environment, protecting your other stored secrets from being viewed if one key were to be compromised.
