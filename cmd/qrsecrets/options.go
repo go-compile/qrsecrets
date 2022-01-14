@@ -48,7 +48,7 @@ func defaultOptions() *options {
 		curve: elliptic.P521(),
 
 		argonMemory:      32 * 1024,
-		argonIterations:  3,
+		argonIterations:  4,
 		argonParallelism: 4,
 		argonKeyLen:      32,
 

@@ -142,6 +142,7 @@ func parseArgs(args []string) (*options, []string) {
 			fmt.Println(" default")
 			fmt.Println(" high")
 			fmt.Println(" very-high")
+			fmt.Println(" slow-secure")
 		case "preset=":
 			if i != 0 {
 				fmt.Println("[Warning] Preset must always be the first argument.")

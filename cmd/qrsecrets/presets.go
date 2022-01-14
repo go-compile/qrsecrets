@@ -41,7 +41,7 @@ func presetHigh() *options {
 
 	o.hash = qrsecrets.HashSHA3_256
 	o.argonMemory = 64 * 1024
-	o.argonIterations = 6
+	o.argonIterations = 34
 
 	return o
 }
@@ -51,7 +51,17 @@ func presetVeryHigh() *options {
 
 	o.hash = qrsecrets.HashSHA3_512
 	o.argonMemory = 64 * 1024
-	o.argonIterations = 12
+	o.argonIterations = 64
+
+	return o
+}
+
+func presetSlowSecure() *options {
+	o := defaultOptions()
+
+	o.hash = qrsecrets.HashSHA3_512
+	o.argonMemory = 128 * 1024
+	o.argonIterations = 128
 
 	return o
 }
@@ -68,6 +78,8 @@ func preset(name string) (*options, error) {
 		return presetHigh(), nil
 	case "very-high", "very_high":
 		return presetVeryHigh(), nil
+	case "slow", "slow-secure", "slow_secure":
+		return presetSlowSecure(), nil
 	default:
 		return nil, ErrUnknownPreset
 	}
