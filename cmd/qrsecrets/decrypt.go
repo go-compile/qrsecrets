@@ -88,6 +88,7 @@ func decrypt(options *options, prompt *readline.Instance, privateKeyFile string,
 		return err
 	}
 
+	// TODO: write plaintext to -output= arg file location if set
 	fmt.Printf("[Info] Success, decrypted %d bytes:\n", len(container.CipherText.Plaintext))
 	fmt.Println(string(container.CipherText.Plaintext))
 

@@ -62,15 +62,15 @@ func app() error {
 }
 
 func parseArgs(args []string) (*options, []string) {
-	// paramaters are non argument keyed arguments
-	paramaters := []string{}
+	// parameters are non argument keyed arguments
+	parameters := []string{}
 
 	options := defaultOptions()
 
 	for i := range args {
-		// If not keyed arg append to paramaters array
+		// If not keyed arg append to parameters array
 		if len(args[i]) <= 1 || args[i][0] != '-' {
-			paramaters = append(paramaters, args[i])
+			parameters = append(parameters, args[i])
 			continue
 		}
 
@@ -235,5 +235,5 @@ func parseArgs(args []string) (*options, []string) {
 		}
 	}
 
-	return options, paramaters
+	return options, parameters
 }
