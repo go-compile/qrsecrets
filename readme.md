@@ -56,6 +56,12 @@ For the Metadata section the following hash functions are available. All of thes
 - SHA3-256
 - SHA3-512
 
+## KDF Used for main Encryption
+
+This is used to encrypt your secret and thus needs to be the most secure.
+
+- HKDF-Argon2
+
 # KDFs
 
 QRsecrets doesn't allow the modification of the KDF on the Ciphertext section, but rather allows the KDF parameters to be modified. Using Argon2 and HKDF the key is derived.
@@ -64,7 +70,53 @@ QRsecrets doesn't allow the modification of the KDF on the Ciphertext section, b
 
 This repo is both a command line tool and a package you can include into your Go applications.
 
-TODO: provide examples usage
+## Install package
+
+```
+go get -u github.com/go-compile/qrsecrets
+```
+
+```go
+package main
+
+import (
+    "fmt"
+    "log"
+
+    "github.com/1william1/ecc"
+    "github.com/go-compile/qrsecrets"
+)
+
+func main() {
+    secret := "Hello this is my secret"
+	hash := qrsecrets.HashSHA256
+	curve := elliptic.P256()
+	key := "Password123"
+
+	c, err := qrsecrets.NewContainer(
+        curve,
+        hash,
+        []byte(secret),
+         64-int32(len(secret)),
+    )
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	private, err := ecc.GenerateKey(curve)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	buf := bytes.NewBuffer(nil)
+	if err := c.Encode(buf, private.Public, []byte(key)); err != nil {
+		log.Fatal(err)
+	}
+
+    fmt.Println(buf.Bytes())
+}
+```
 
 # Screenshots
 
@@ -161,4 +213,16 @@ qrsecrets generatekey -output=private.pem
 
 ```bash
 qrsecrets -help
+```
+
+# Build from source
+
+```bash
+# Clone repo
+git clone github.com/go-compile/qrsecrets
+# CD into command folder for the CLI
+cd qrsecrets/cmd/qrsecrets
+
+# Go build
+go build -ldflags="-s -w" -trimpath
 ```
