@@ -146,7 +146,7 @@ Compatible with all major operating systems and more. Even compatible with a ras
 
 Download the latest from [releases page](https://github.com/go-compile/qrsecrets/releases). You can run via the command line or we recommend adding it to your path.
 
-# Usage
+# CLI Usage
 
 ## Encrypt data
 
