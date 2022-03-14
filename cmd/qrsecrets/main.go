@@ -12,7 +12,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-const version = "v1.1.0"
+const version = "v1.1.1"
 
 func main() {
 	if err := app(); err != nil {
@@ -105,6 +105,7 @@ func parseArgs(args []string) (*options, []string) {
 			fmt.Printf("  -%-12s %s\n", "file=", "Encrypt a file instead of a string")
 			fmt.Printf("  -%-12s %s\n", "masterkey=", "Set masterkey via the cli")
 			fmt.Printf("  -%-12s %s\n", "output=", "Set where to output the result; PNG or Bin file")
+			fmt.Printf("  -%-12s %s\n", "no-pki", "Insecure option to not use a private key pair")
 		case "hash":
 			// Print hash and trim the prefix "Hash" from the returned string
 			fmt.Printf("Hash: %s\n", options.hash.String()[4:])
