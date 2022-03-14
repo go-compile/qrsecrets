@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/ecdsa"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -22,9 +23,21 @@ import (
 
 func decrypt(options *options, prompt *readline.Instance, privateKeyFile string, inputFile string) error {
 
-	priv, err := readPrivateKey(privateKeyFile, prompt)
-	if err != nil {
-		return err
+	var (
+		priv *ecdsa.PrivateKey
+		err  error
+	)
+
+	if options.symmetricOnly {
+		// Set default key if using symmetric only
+		// user is warned this is insecure when enabling the option.
+		priv = defaultKey()
+	} else {
+		priv, err = readPrivateKey(privateKeyFile, prompt)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	// Convert ECDSA private key to ECC private key

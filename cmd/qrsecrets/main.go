@@ -12,7 +12,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-const version = "v1.0.0"
+const version = "v1.1.0"
 
 func main() {
 	if err := app(); err != nil {
@@ -40,18 +40,23 @@ func app() error {
 	case "generate-key", "generate_key", "generatekey", "genkey", "gen-key", "gen_key":
 		return generateKey(options, prompt)
 	case "encrypt":
-		if len(parameters) < 2 {
+		if len(parameters) < 2 && !options.symmetricOnly {
 			fmt.Println("[Warning] You must provide a private key as a paramater.")
 			return nil
+		} else if options.symmetricOnly {
+			parameters = append(parameters, "-KEY-")
 		}
 
 		return encrypt(options, prompt, parameters[1])
 	case "decrypt":
-		if len(parameters) < 3 {
+		if (len(parameters) < 3 && !options.symmetricOnly) || (len(parameters) < 2 && options.symmetricOnly) {
 			fmt.Println("[Warning] You must provide your private key and input media.")
 			fmt.Println(" qrsecrets decrypt ./ec-P521.pem ./btc-seed.png")
 			fmt.Println(" qrsecrets decrypt ./ec-P521.pem ./btc-seed.bin")
 			return nil
+		} else if options.symmetricOnly {
+			parameters = append(parameters, "-KEY-")
+			parameters[2] = parameters[1]
 		}
 
 		return decrypt(options, prompt, parameters[1], parameters[2])
@@ -162,6 +167,11 @@ func parseArgs(args []string) (*options, []string) {
 		case "base64":
 			options.base64 = !options.base64
 			fmt.Printf("[Info] Toggled base64 to %v.\n", options.base64)
+		case "symmetric-only", "no-pki":
+			options.symmetricOnly = !options.symmetricOnly
+			fmt.Printf("[Info] Toggled symmetric only to %v.\n", options.symmetricOnly)
+			fmt.Printf("[Warn] This option is not as secure. It exposes your Argon2 paramaters\n" +
+				"and other metadata. It is strongly advised you don't use this option.\n")
 		case "curve=":
 			curveID := qrsecrets.CurveToID(arg[1])
 			if curveID == 0 {
