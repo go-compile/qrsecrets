@@ -74,7 +74,7 @@ func generateKey(options *options, prompt *readline.Instance) error {
 	}
 
 	// TODO: option to split public and private key file
-	filename := fmt.Sprintf("ecdsa-%s.pem", k.Public().Name())
+	filename := fmt.Sprintf("private-ec-%s.pem", k.Public().Name())
 
 	// If output file has been set use that instead
 	if options.output != "" {

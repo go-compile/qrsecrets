@@ -34,7 +34,6 @@ type options struct {
 	argonParallelism uint8
 	argonKeyLen      uint32
 
-	paste           bool
 	padding         uint32
 	qrRecovery      qrcode.RecoveryLevel
 	ignoreSizeLimit bool
