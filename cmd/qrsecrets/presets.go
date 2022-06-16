@@ -15,7 +15,7 @@ var (
 func presetLow() *options {
 	o := defaultOptions()
 
-	o.curve = qrsecrets.IDToCurve(qrsecrets.CurveP256)
+	o.curve = qrsecrets.CurveP256
 	o.argonParallelism = 1
 
 	return o
@@ -24,7 +24,7 @@ func presetLow() *options {
 func presetMedium() *options {
 	o := defaultOptions()
 
-	o.curve = qrsecrets.IDToCurve(qrsecrets.CurveP384)
+	o.curve = qrsecrets.CurveP384
 	o.argonParallelism = 2
 
 	return o

@@ -1,7 +1,6 @@
 package qrsecrets
 
 import (
-	"crypto/elliptic"
 	"strings"
 )
 
@@ -18,6 +17,8 @@ const (
 	CurveP384
 	// CurveP521 is a nist curve
 	CurveP521
+
+	// TODO: add brainpool curves
 )
 
 // CurveToID converts a curve name to a CurveID
@@ -33,21 +34,5 @@ func CurveToID(name string) CurveID {
 		return CurveP521
 	default:
 		return 0
-	}
-}
-
-// IDToCurve takes a curve ID and returns a elliptic curve
-func IDToCurve(curve CurveID) elliptic.Curve {
-	switch curve {
-	case CurveP224:
-		return elliptic.P224()
-	case CurveP256:
-		return elliptic.P256()
-	case CurveP384:
-		return elliptic.P384()
-	case CurveP521:
-		return elliptic.P521()
-	default:
-		return nil
 	}
 }

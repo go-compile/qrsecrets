@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/ecdsa"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -12,9 +11,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/1william1/ecc"
 	"github.com/chzyer/readline"
 	"github.com/go-compile/qrsecrets"
+	"github.com/go-compile/rome"
 	"github.com/liyue201/goqr"
 
 	_ "image/jpeg"
@@ -24,7 +23,7 @@ import (
 func decrypt(options *options, prompt *readline.Instance, privateKeyFile string, inputFile string) error {
 
 	var (
-		priv *ecdsa.PrivateKey
+		priv rome.PrivateKey
 		err  error
 	)
 
@@ -33,21 +32,14 @@ func decrypt(options *options, prompt *readline.Instance, privateKeyFile string,
 		// user is warned this is insecure when enabling the option.
 		priv = defaultKey()
 	} else {
-		priv, err = readPrivateKey(privateKeyFile, prompt)
+		priv, _, err = readKey(privateKeyFile, prompt)
 		if err != nil {
 			return err
 		}
 
-	}
-
-	// Convert ECDSA private key to ECC private key
-	key := &ecc.Private{
-		D: priv.D,
-		Public: &ecc.Public{
-			Curve: priv.Curve,
-			X:     priv.X,
-			Y:     priv.Y,
-		},
+		if priv == nil {
+			return errors.New("no private key provided")
+		}
 	}
 
 	fmt.Printf("[Info] Opening %s\n", inputFile)
@@ -96,7 +88,7 @@ func decrypt(options *options, prompt *readline.Instance, privateKeyFile string,
 		}
 	}
 
-	container, err := qrsecrets.UnmarshalContainer(content, key, masterKey)
+	container, err := qrsecrets.UnmarshalContainer(content, priv, masterKey)
 	if err != nil {
 		return err
 	}

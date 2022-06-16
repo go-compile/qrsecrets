@@ -2,21 +2,23 @@ package qrsecrets_test
 
 import (
 	"bytes"
-	"crypto/elliptic"
 	"testing"
 
 	"github.com/go-compile/qrsecrets"
-
-	"github.com/1william1/ecc"
+	"github.com/go-compile/rome/p256"
 )
 
 func TestNewContainer(t *testing.T) {
 
 	secret := "Hello this is my secret"
 	hash := qrsecrets.HashSHA256
-	curve := elliptic.P256()
 
-	c, err := qrsecrets.NewContainer(curve, hash, []byte(secret), 64-int32(len(secret)))
+	private, err := p256.Generate()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	c, err := qrsecrets.NewContainer(private.Public().Name(), hash, []byte(secret), 64-int32(len(secret)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,21 +51,20 @@ func TestNewContainer(t *testing.T) {
 func TestEncode(t *testing.T) {
 	secret := "Hello this is my secret"
 	hash := qrsecrets.HashSHA256
-	curve := elliptic.P256()
 	key := "Password123"
 
-	c, err := qrsecrets.NewContainer(curve, hash, []byte(secret), 64-int32(len(secret)))
+	private, err := p256.Generate()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	private, err := ecc.GenerateKey(curve)
+	c, err := qrsecrets.NewContainer(private.Public().Name(), hash, []byte(secret), 64-int32(len(secret)))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	buf := bytes.NewBuffer(nil)
-	if err := c.Encode(buf, private.Public, []byte(key)); err != nil {
+	if err := c.Encode(buf, private.Public(), []byte(key)); err != nil {
 		t.Fatal(err)
 	}
 

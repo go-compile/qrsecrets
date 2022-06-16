@@ -8,14 +8,14 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/1william1/ecc"
+	"github.com/go-compile/rome"
 	"golang.org/x/crypto/argon2"
 )
 
 // Encode takes a public key to encrypt the metadata section
-func (c *Container) Encode(w io.Writer, pub *ecc.Public, masterKey []byte) error {
+func (c *Container) Encode(w io.Writer, pub rome.PublicKey, masterKey []byte) error {
 
-	curve := CurveToID(pub.Curve.Params().Name)
+	curve := CurveToID(pub.Name())
 	if curve == 0 {
 		return ErrCurveSupport
 	}
@@ -52,7 +52,7 @@ func (c *Container) Encode(w io.Writer, pub *ecc.Public, masterKey []byte) error
 }
 
 // Encode will write the metadata and encrypt it with ECIES
-func (c *SectionMetaData) Encode(w io.Writer, container *Container, pub *ecc.Public) error {
+func (c *SectionMetaData) Encode(w io.Writer, container *Container, pub rome.PublicKey) error {
 	if len(c.Salt) != 32 {
 		return ErrSaltInvalid
 	}
@@ -98,13 +98,16 @@ func (c *SectionMetaData) Encode(w io.Writer, container *Container, pub *ecc.Pub
 		return err
 	}
 
-	hkdf := HashIDToKDF(container.HashID)
-	if hkdf == nil {
+	kdf := HashIDToKDF(container.HashID)
+	if kdf == nil {
 		return ErrHashUnsupported
 	}
 
-	// Encrypt the metadata section using ECIES-AES256-HKDF-SHA256 (or other specified hash function)
-	ciphertext, err := pub.Encrypt(buf.Bytes(), &ecc.EncryptOption{Property: ecc.PropertyKDF, Value: hkdf})
+	// TODO: add cipher option for encrypt
+	// TODO: implement KDF option for encrypt
+
+	// Encrypt the metadata section using ECIES-AES256-SHA256 (or other specified hash function)
+	ciphertext, err := pub.Encrypt(buf.Bytes(), rome.CipherAES_GCM, kdf)
 	if err != nil {
 		return err
 	}
@@ -166,7 +169,7 @@ func (c *SectionCipherText) Encode(w io.Writer, m *SectionMetaData, masterKey []
 }
 
 // Marshal encodes the container and returns it in bytes
-func (c *Container) Marshal(pub *ecc.Public, masterKey []byte) (data []byte, err error) {
+func (c *Container) Marshal(pub rome.PublicKey, masterKey []byte) (data []byte, err error) {
 	buf := bytes.NewBuffer(nil)
 
 	err = c.Encode(buf, pub, masterKey)

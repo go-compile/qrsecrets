@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/sha256"
 	"encoding/binary"
 	"io"
 
-	"github.com/1william1/ecc"
+	"github.com/go-compile/rome"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/argon2"
 )
@@ -24,7 +25,7 @@ var (
 )
 
 // DecodeContainer will decode a container and decrypt it
-func DecodeContainer(r io.Reader, priv *ecc.Private, masterKey []byte) (*Container, error) {
+func DecodeContainer(r io.Reader, priv rome.PrivateKey, masterKey []byte) (*Container, error) {
 
 	// Read magic number
 	magicNum := make([]byte, 3)
@@ -82,7 +83,7 @@ func DecodeContainer(r io.Reader, priv *ecc.Private, masterKey []byte) (*Contain
 	return c, nil
 }
 
-func decodeMetaDataSection(r io.Reader, c *Container, priv *ecc.Private) (*SectionMetaData, error) {
+func decodeMetaDataSection(r io.Reader, c *Container, priv rome.PrivateKey) (*SectionMetaData, error) {
 
 	cipherTextLen := make([]byte, 2)
 	if _, err := io.ReadFull(r, cipherTextLen); err != nil {
@@ -94,18 +95,16 @@ func decodeMetaDataSection(r io.Reader, c *Container, priv *ecc.Private) (*Secti
 		return nil, err
 	}
 
-	curve := IDToCurve(c.Curve)
-	if curve == nil {
-		return nil, ErrCurveSupport
-	}
+	// hkdf := HashIDToKDF(c.HashID)
+	// if hkdf == nil {
+	// 	return nil, ErrHashUnsupported
+	// }
 
-	hkdf := HashIDToKDF(c.HashID)
-	if hkdf == nil {
-		return nil, ErrHashUnsupported
-	}
+	// TODO: add cipher option for decrypt
+	// TODO: implement KDF option for decrypt
 
 	// decrypt the metadata section by using the private key and the peramaters in the container
-	plaintext, err := priv.Decrypt(cipherText, curve, &ecc.EncryptOption{Property: ecc.PropertyKDF, Value: hkdf})
+	plaintext, err := priv.Decrypt(cipherText, rome.CipherAES_GCM, sha256.New())
 	if err != nil {
 		return nil, err
 	}
@@ -217,7 +216,7 @@ func decodeCiphertextSection(r io.Reader, m *SectionMetaData, masterKey []byte) 
 }
 
 // UnmarshalContainer will decode the provided bytes into a container
-func UnmarshalContainer(container []byte, priv *ecc.Private, masterKey []byte) (*Container, error) {
+func UnmarshalContainer(container []byte, priv rome.PrivateKey, masterKey []byte) (*Container, error) {
 	buf := bytes.NewBuffer(container)
 	return DecodeContainer(buf, priv, masterKey)
 }

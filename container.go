@@ -1,7 +1,6 @@
 package qrsecrets
 
 import (
-	"crypto/elliptic"
 	"crypto/rand"
 
 	"github.com/pkg/errors"
@@ -58,11 +57,11 @@ var (
 )
 
 // NewContainer will create a new container to store the secret content
-func NewContainer(curve elliptic.Curve, hash HashID, plaintext []byte, padding int32) (*Container, error) {
+func NewContainer(curve string, hash HashID, plaintext []byte, padding int32) (*Container, error) {
 
 	c := &Container{
 		version: ProtocolVersion,
-		Curve:   CurveToID(curve.Params().Name),
+		Curve:   CurveToID(curve),
 		HashID:  hash,
 
 		MetaData: &SectionMetaData{

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/ecdsa"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
@@ -12,17 +11,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/1william1/ecc"
 	"github.com/chzyer/readline"
 	"github.com/go-compile/qrsecrets"
+	"github.com/go-compile/rome"
+	"github.com/go-compile/rome/parse"
 	"github.com/pkg/errors"
 	"github.com/skip2/go-qrcode"
 )
 
-func encrypt(options *options, prompt *readline.Instance, privateKeyFile string) error {
+func encrypt(options *options, prompt *readline.Instance, keyFile string) error {
 
 	var (
-		priv *ecdsa.PrivateKey
+		priv rome.PrivateKey
+		pub  rome.PublicKey
 		err  error
 	)
 
@@ -31,21 +32,15 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 		// user is warned this is insecure when enabling the option.
 		priv = defaultKey()
 	} else {
-		priv, err = readPrivateKey(privateKeyFile, prompt)
+		priv, pub, err = readKey(keyFile, prompt)
 		if err != nil {
 			return err
 		}
 
-	}
-
-	// Convert ECDSA private key to ECC private key
-	key := ecc.Private{
-		D: priv.D,
-		Public: &ecc.Public{
-			Curve: priv.Curve,
-			X:     priv.X,
-			Y:     priv.Y,
-		},
+		// extract public key from private
+		if priv != nil {
+			pub = priv.Public()
+		}
 	}
 
 	content := []byte{}
@@ -76,7 +71,7 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 	}
 
 	// Create new container for secret
-	container, err := qrsecrets.NewContainer(key.Public.Curve, options.hash, content, int32(options.padding))
+	container, err := qrsecrets.NewContainer(pub.Name(), options.hash, content, int32(options.padding))
 	if err != nil {
 		return err
 	}
@@ -97,7 +92,7 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 		}
 	}
 
-	data, err := container.Marshal(key.Public, masterKey)
+	data, err := container.Marshal(pub, masterKey)
 	if err != nil {
 		return err
 	}
@@ -193,27 +188,29 @@ func encrypt(options *options, prompt *readline.Instance, privateKeyFile string)
 	}
 }
 
-func readPrivateKey(file string, prompt *readline.Instance) (*ecdsa.PrivateKey, error) {
+// read key will take a key input and return either a public or private key based on the file.
+// Note: a private key will not fill out the public key
+func readKey(file string, prompt *readline.Instance) (rome.PrivateKey, rome.PublicKey, error) {
 	content, err := ioutil.ReadFile(file)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	pemBlock, rest := pem.Decode(content)
 	if len(rest) > 0 {
-		return nil, errors.New("didn't decode all of PEM file")
+		return nil, nil, errors.New("didn't decode all of PEM file")
 	}
 
 	if x509.IsEncryptedPEMBlock(pemBlock) {
 
 		pw, err := prompt.ReadPassword(fmt.Sprintf("Passphrase for (%s): ", file))
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		pemData, err := x509.DecryptPEMBlock(pemBlock, pw)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		pemBlock.Bytes = pemData
@@ -221,15 +218,14 @@ func readPrivateKey(file string, prompt *readline.Instance) (*ecdsa.PrivateKey, 
 
 	switch pemBlock.Type {
 	case "EC PRIVATE KEY":
-		key, err := x509.ParseECPrivateKey(pemBlock.Bytes)
-		if err != nil {
-			return nil, err
-		}
-
-		return key, nil
+		key, err := parse.PrivateASN1(pemBlock.Bytes)
+		return key, nil, err
+	case "EC PUBLIC KEY":
+		key, err := parse.PublicASN1(pemBlock.Bytes)
+		return nil, key, err
 	case "RSA PRIVATE KEY":
-		return nil, errors.New("RSA is not supported")
+		return nil, nil, errors.New("RSA is not supported")
 	default:
-		return nil, errors.New(fmt.Sprintf("unsupported private key type %q", pemBlock.Type))
+		return nil, nil, errors.New(fmt.Sprintf("unsupported private key type %q", pemBlock.Type))
 	}
 }

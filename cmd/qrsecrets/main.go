@@ -12,7 +12,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-const version = "v1.1.1"
+const version = "v2.0.0-beta1"
 
 func main() {
 	if err := app(); err != nil {
@@ -180,7 +180,7 @@ func parseArgs(args []string) (*options, []string) {
 				return nil, nil
 			}
 
-			options.curve = qrsecrets.IDToCurve(curveID)
+			options.curve = curveID
 		case "curves":
 			fmt.Println("Supported elliptic curves:")
 			fmt.Println(" P521")
