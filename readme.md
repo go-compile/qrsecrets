@@ -47,6 +47,19 @@ QR secrets supports the following curves:
 - nist-p256
 - nist-p384
 - nist-p521
+- Brainpool P160t1
+- Brainpool P192r1
+- Brainpool P192t1
+- Brainpool P224r1
+- Brainpool P224t1
+- Brainpool P256r1
+- Brainpool P256t1
+- Brainpool P320r1
+- Brainpool P320t1
+- Brainpool P384r1
+- Brainpool P384t1
+- Brainpool P512r1
+- Brainpool P512t1
 
 # Cryptographic Hash Functions
 

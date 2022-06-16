@@ -11,6 +11,7 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/go-compile/qrsecrets"
 	"github.com/go-compile/rome"
+	"github.com/go-compile/rome/brainpool"
 	"github.com/go-compile/rome/p224"
 	"github.com/go-compile/rome/p256"
 	"github.com/go-compile/rome/p384"
@@ -35,6 +36,32 @@ func generateKey(options *options, prompt *readline.Instance) error {
 		k, err = p384.Generate()
 	case qrsecrets.CurveP521:
 		k, err = p521.Generate()
+	case qrsecrets.CurveP160t1:
+		k, err = brainpool.GenerateP160t1()
+	case qrsecrets.CurveP192r1:
+		k, err = brainpool.GenerateP192r1()
+	case qrsecrets.CurveP192t1:
+		k, err = brainpool.GenerateP192t1()
+	case qrsecrets.CurveP224r1:
+		k, err = brainpool.GenerateP224r1()
+	case qrsecrets.CurveP224t1:
+		k, err = brainpool.GenerateP224t1()
+	case qrsecrets.CurveP256r1:
+		k, err = brainpool.GenerateP256r1()
+	case qrsecrets.CurveP256t1:
+		k, err = brainpool.GenerateP256t1()
+	case qrsecrets.CurveP320r1:
+		k, err = brainpool.GenerateP320r1()
+	case qrsecrets.CurveP320t1:
+		k, err = brainpool.GenerateP320t1()
+	case qrsecrets.CurveP384r1:
+		k, err = brainpool.GenerateP384r1()
+	case qrsecrets.CurveP384t1:
+		k, err = brainpool.GenerateP384t1()
+	case qrsecrets.CurveP512r1:
+		k, err = brainpool.GenerateP512r1()
+	case qrsecrets.CurveP512t1:
+		k, err = brainpool.GenerateP512t1()
 	default:
 		return errors.New("unknown elliptic curve")
 	}
