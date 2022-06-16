@@ -100,10 +100,9 @@ func decodeMetaDataSection(r io.Reader, c *Container, priv rome.PrivateKey) (*Se
 	}
 
 	// TODO: add cipher option for decrypt
-	// TODO: implement KDF option for decrypt
 
 	// decrypt the metadata section by using the private key and the peramaters in the container
-	plaintext, err := priv.Decrypt(cipherText, rome.CipherAES_GCM, hash(), rome.NewHKDF(hash, 64, nil))
+	plaintext, err := priv.Decrypt(cipherText, rome.CipherAES_GCM, hash(), rome.NewHKDF(hash, 32, nil))
 	if err != nil {
 		return nil, err
 	}
