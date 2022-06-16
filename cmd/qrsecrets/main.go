@@ -12,7 +12,7 @@ import (
 	"github.com/chzyer/readline"
 )
 
-const version = "v2.0.0-beta1"
+const version = "v2.0.0"
 
 func main() {
 	if err := app(); err != nil {
