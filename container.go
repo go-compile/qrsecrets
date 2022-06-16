@@ -40,7 +40,7 @@ type SectionCipherText struct {
 }
 
 // ProtocolVersion specifies the default version of the protocol
-const ProtocolVersion uint8 = 1
+const ProtocolVersion uint8 = 2
 
 var (
 	// MagicNumber is prepended to the container to identify its format
