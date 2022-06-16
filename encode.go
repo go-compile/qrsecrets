@@ -98,8 +98,8 @@ func (c *SectionMetaData) Encode(w io.Writer, container *Container, pub rome.Pub
 		return err
 	}
 
-	kdf := HashIDToKDF(container.HashID)
-	if kdf == nil {
+	hash := HashIDToFunc(container.HashID)
+	if hash == nil {
 		return ErrHashUnsupported
 	}
 
@@ -107,7 +107,7 @@ func (c *SectionMetaData) Encode(w io.Writer, container *Container, pub rome.Pub
 	// TODO: implement KDF option for encrypt
 
 	// Encrypt the metadata section using ECIES-AES256-SHA256 (or other specified hash function)
-	ciphertext, err := pub.Encrypt(buf.Bytes(), rome.CipherAES_GCM, kdf)
+	ciphertext, err := pub.Encrypt(buf.Bytes(), rome.CipherAES_GCM, hash(), rome.NewHKDF(hash, 64, nil))
 	if err != nil {
 		return err
 	}

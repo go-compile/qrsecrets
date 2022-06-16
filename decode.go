@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/sha256"
 	"encoding/binary"
 	"io"
 
@@ -95,16 +94,16 @@ func decodeMetaDataSection(r io.Reader, c *Container, priv rome.PrivateKey) (*Se
 		return nil, err
 	}
 
-	// hkdf := HashIDToKDF(c.HashID)
-	// if hkdf == nil {
-	// 	return nil, ErrHashUnsupported
-	// }
+	hash := HashIDToFunc(c.HashID)
+	if hash == nil {
+		return nil, ErrHashUnsupported
+	}
 
 	// TODO: add cipher option for decrypt
 	// TODO: implement KDF option for decrypt
 
 	// decrypt the metadata section by using the private key and the peramaters in the container
-	plaintext, err := priv.Decrypt(cipherText, rome.CipherAES_GCM, sha256.New())
+	plaintext, err := priv.Decrypt(cipherText, rome.CipherAES_GCM, hash(), rome.NewHKDF(hash, 64, nil))
 	if err != nil {
 		return nil, err
 	}

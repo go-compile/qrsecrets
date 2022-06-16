@@ -23,17 +23,17 @@ const (
 	HashSHA3_512
 )
 
-// HashIDToKDF takes a HashID and returns a HKDF function
-func HashIDToKDF(hash HashID) hash.Hash {
+// HashIDToFunc takes a HashID and returns a hash.Hash
+func HashIDToFunc(hash HashID) func() hash.Hash {
 	switch hash {
 	case HashSHA256:
-		return sha256.New()
+		return sha256.New
 	case HashSHA512:
-		return sha512.New()
+		return sha512.New
 	case HashSHA3_256:
-		return sha3.New256()
+		return sha3.New256
 	case HashSHA3_512:
-		return sha3.New512()
+		return sha3.New512
 	default:
 		return nil
 	}
