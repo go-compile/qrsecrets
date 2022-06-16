@@ -190,12 +190,6 @@ func TestEncryptP512t1(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Set the options
-	container.MetaData.ArgonIterations = 4
-	container.MetaData.ArgonMemory = 32 * 1024
-	container.MetaData.ArgonParallelism = 4
-	container.MetaData.ArgonKeyLen = 32
-
 	data, err := container.Marshal(pub, []byte(key))
 	if err != nil {
 		t.Fatal(err)

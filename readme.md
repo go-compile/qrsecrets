@@ -97,38 +97,39 @@ import (
     "fmt"
     "log"
 
-    "github.com/1william1/ecc"
+    "github.com/go-compile/rome/brainpool"
     "github.com/go-compile/qrsecrets"
 )
 
 func main() {
-    secret := "Hello this is my secret"
-	hash := qrsecrets.HashSHA256
-	curve := elliptic.P256()
-	key := "Password123"
+	msg := []byte("My secret message.")
+	key := "password123SECURE"
 
-	c, err := qrsecrets.NewContainer(
-        curve,
-        hash,
-        []byte(secret),
-         64-int32(len(secret)),
-    )
-
+	priv, err := brainpool.GenerateP512t1()
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	private, err := ecc.GenerateKey(curve)
+	pub := priv.Public()
+
+	// === ENCRYPT
+	container, err := qrsecrets.NewContainer(pub.Name(), qrsecrets.HashSHA256, msg, 10)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatal(err)
 	}
 
-	buf := bytes.NewBuffer(nil)
-	if err := c.Encode(buf, private.Public, []byte(key)); err != nil {
-		log.Fatal(err)
+	data, err := container.Marshal(pub, []byte(key))
+	if err != nil {
+		t.Fatal(err)
 	}
 
-    fmt.Println(buf.Bytes())
+	// === DECRYPT
+	container, err = qrsecrets.DecodeContainer(bytes.NewBuffer(data), priv, []byte(key))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Println(string(container.CipherText.Plaintext))
 }
 ```
 
